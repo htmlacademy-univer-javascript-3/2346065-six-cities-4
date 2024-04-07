@@ -1,34 +1,50 @@
-import Favorites from '../../pages/favorites-page/favorites-page';
-import Login from '../../pages/login-page/login-page';
-import MainPage from '../../pages/main-page/main-page';
-import {Route, BrowserRouter, Routes} from 'react-router-dom';
-import Offer from '../../pages/offer-page/offer-page';
-import Error404 from '../../pages/error-404/error-404';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import MainScreen from '../../pages/main-screen/main-screen';
+import LoginScreen from '../../pages/login-screen/login-screen';
+import FavotitesScreen from '../../pages/favorites-screen/favorites-screen';
+import OfferScreen from '../../pages/offer-screen/offer-screen';
+import ErrorScreen from '../../pages/error-screen/error-screen';
 import PrivateRoute from '../private-route/private-route';
-import { AuthorizationStatus } from '../../consts/authorization-status';
+import { AuthorizationStatus } from '../constants/status.tsx';
+import { AppRoute } from '../constants/app-route.tsx';
+import { Offer } from '../../types/offer';
 
+type AppComponentProps = {
+  placesCount: number;
+  offers: Offer[];
+}
 
-type AppProps = {
-  offersNumber: number;
-};
-
-function App({offersNumber}: AppProps){
-  return(
+function App({ placesCount, offers }: AppComponentProps): JSX.Element {
+  const favourites = offers.filter((o) => o.isFavorite);
+  return (
     <BrowserRouter>
       <Routes>
-        <Route path='/'>
-          <Route index element = {<MainPage offersNumber={offersNumber}/>}></Route>
-          <Route path='login' element={<Login />}></Route>
-          <Route path='favorites' element={
-            <PrivateRoute authorizationStatus={AuthorizationStatus.NoAuth}>
-              <Favorites />
+        <Route
+          path={AppRoute.Main}
+          element={<MainScreen placesCount={placesCount} offers={offers}/>}
+        />
+        <Route
+          path={AppRoute.Login}
+          element={<LoginScreen/>}
+        />
+        <Route
+          path={AppRoute.Favorites}
+          element={
+            <PrivateRoute
+              authorizationStatus={AuthorizationStatus.Auth}
+            >
+              <FavotitesScreen offers={favourites}/>
             </PrivateRoute>
           }
-          >
-          </Route>
-          <Route path='offer/:id' element={<Offer />}></Route>
-        </Route>
-        <Route path='*' element={<Error404 />}></Route>
+        />
+        <Route
+          path={AppRoute.Offer}
+          element={<OfferScreen/>}
+        />
+        <Route
+          path="*"
+          element={<ErrorScreen/>}
+        />
       </Routes>
     </BrowserRouter>
   );
