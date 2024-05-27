@@ -1,5 +1,4 @@
 export type FavoriteData = {
-  offerId: string;
-  status: number;
-  favorites: string[];
-};
+    id: string;
+    status: number;
+  };

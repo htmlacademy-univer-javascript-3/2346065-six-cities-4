@@ -1,7 +1,6 @@
-import { AuthorizationStatus } from '../../components/constants/status';
-import {NameSpace} from '../../const';
-import {State} from '../../types/state';
+import { AuthorizationStatus, NameSpace } from '../../const';
+import { State } from '../../types/state';
+import { UserData } from '../../types/user-data';
 
 export const getAuthorizationStatus = (state: State): AuthorizationStatus => state[NameSpace.User].authorizationStatus;
-export const getEmail = (state: State): string => state[NameSpace.User].email;
-export const getAuthCheckedStatus = (state: State): boolean => state[NameSpace.User].authorizationStatus !== AuthorizationStatus.Unknown;
+export const getUserData = (state: State): UserData | undefined => state[NameSpace.User].userData;

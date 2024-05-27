@@ -1,4 +1,4 @@
-type User = {
+export type User = {
   name: string;
   avatarUrl: string;
   isPro: boolean;
@@ -6,8 +6,8 @@ type User = {
 
 export type Review = {
   id: string;
-  user: User;
-  rating: number;
   date: string;
+  user: User;
   comment: string;
+  rating: number;
 }
