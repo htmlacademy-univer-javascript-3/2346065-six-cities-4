@@ -1,31 +1,36 @@
 import { FormEvent, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { AppRoute, cities } from '../../const';
 import { loginAction } from '../../store/api-actions';
+import { useAppDispatch } from '../../hooks';
 import { Link } from 'react-router-dom';
-import { AuthorizationStatus } from '../../components/constants/status';
-import { AppRoute } from '../../components/constants/app-route';
-import { getAuthorizationStatus } from '../../store/user-process/selectors';
+import { redirectToRoute } from '../../store/action';
+import { changeCity } from '../../store/common-data/common-data';
+
+function getRandomCity() {
+  const cityKeys = Object.keys(cities) as (keyof typeof cities)[];
+  const randomIndex = Math.floor(Math.random() * cityKeys.length);
+  return cities[cityKeys[randomIndex]];
+}
 
 function LoginScreen(): JSX.Element {
-  const loginRef = useRef<HTMLInputElement | null>(null);
+  const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
-  const dispatch = useAppDispatch();
 
-  const status = useAppSelector(getAuthorizationStatus);
-  if (status === AuthorizationStatus.Auth) {
-    window.location.href = AppRoute.Main;
-  }
+  const dispatch = useAppDispatch();
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-
-    if (loginRef.current !== null && passwordRef.current !== null) {
-      dispatch(loginAction({
-        email: loginRef.current.value,
-        password: passwordRef.current.value
-      }));
+    if (emailRef.current !== null && passwordRef.current !== null) {
+      dispatch(
+        loginAction({
+          email: emailRef.current.value,
+          password: passwordRef.current.value
+        })
+      );
     }
   };
+
+  const city = getRandomCity();
 
   return (
     <div className="page page--gray page--login">
@@ -33,13 +38,13 @@ function LoginScreen(): JSX.Element {
         <div className="container">
           <div className="header__wrapper">
             <div className="header__left">
-              <Link to="/" className="header__logo-link">
+              <Link to={AppRoute.Main} className="header__logo-link">
                 <img className="header__logo" src="img/logo.svg" alt="6 cities logo" width="81" height="41" />
               </Link>
             </div>
           </div>
         </div>
-      </header>
+      </header >
 
       <main className="page__main page__main--login">
         <div className="page__login-container container">
@@ -48,19 +53,29 @@ function LoginScreen(): JSX.Element {
             <form className="login__form form" action="#" method="post" onSubmit={handleSubmit}>
               <div className="login__input-wrapper form__input-wrapper">
                 <label className="visually-hidden">E-mail</label>
-                <input ref={loginRef} className="login__input form__input" type="email" name="email" placeholder="Email" required />
+                <input className="login__input form__input" type="email" name="email" placeholder="Email" required ref={emailRef} />
               </div>
               <div className="login__input-wrapper form__input-wrapper">
                 <label className="visually-hidden">Password</label>
-                <input ref={passwordRef} className="login__input form__input" type="password" name="password" placeholder="Password" required />
+                <input className="login__input form__input" type="password" name="password" placeholder="Password" required ref={passwordRef} />
               </div>
               <button className="login__submit form__submit button" type="submit">Sign in</button>
             </form>
           </section>
+          <section className="locations locations--login locations--current">
+            <div className="locations__item">
+              <a className="locations__item-link" onClick={() => {
+                dispatch(redirectToRoute(AppRoute.Main));
+                dispatch(changeCity(city));
+              }}
+              >
+                <span>{city}</span>
+              </a>
+            </div>
+          </section>
         </div>
       </main>
-    </div>
+    </div >
   );
 }
-
 export default LoginScreen;

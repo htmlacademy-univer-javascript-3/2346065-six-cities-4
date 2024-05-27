@@ -1,74 +1,78 @@
-
-import React, { memo, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Icon, Marker, layerGroup } from 'leaflet';
 import useMap from '../../hooks/use-map';
-import { City } from '../../types/city';
-import { Point } from '../../types/point';
+import { City, Point } from '../../types/location';
 import 'leaflet/dist/leaflet.css';
 import { useAppSelector } from '../../hooks';
-import { getSelectedPoint } from '../../store/offer-process/selectors';
+import { URL_MARKER_CURRENT, URL_MARKER_STANDART } from '../../const';
+import { getChosenOffer } from '../../store/offer-data/selectors';
+import { getHighlightedMarker } from '../../store/common-data/selectors';
 
 type MapProps = {
-  city: City;
   points: Point[];
+  city: City;
 }
 
-const defaultIcon = new Icon({
-  iconUrl: '/img/pin.svg',
-  iconSize: [30, 30]
+const currentIcon = new Icon({
+  iconUrl: URL_MARKER_CURRENT,
+  iconSize: [32, 32],
+  iconAnchor: [20, 40]
 });
 
-const activeIcon = new Icon({
-  iconUrl: '/img/pin-active.svg',
-  iconSize: [30, 30]
+const standartIcon = new Icon({
+  iconUrl: URL_MARKER_STANDART,
+  iconSize: [32, 32],
+  iconAnchor: [20, 40]
 });
 
-function MapComponent(props: MapProps): JSX.Element {
-  const selectedPoint = useAppSelector(getSelectedPoint);
-  const { city, points } = props;
+function Map(props: MapProps): JSX.Element {
+  const highlightedMarker = useAppSelector(getHighlightedMarker);
 
-  const mapRef = React.useRef(null);
+  const { points, city } = props;
+  const mapRef = useRef(null);
   const map = useMap(mapRef, city);
 
-  const currentUrl = window.location.href;
-
-  useEffect(() => {
-    if (map) {
-      map.setView([city.location.latitude, city.location.longitude], city.location.zoom);
-    }
-  }, [map, city]);
+  const currentPoint = useAppSelector(getChosenOffer)?.location;
 
   useEffect(() => {
     if (map) {
       const markerLayer = layerGroup().addTo(map);
+
+      if (currentPoint) {
+        const marker = new Marker({
+          lat: currentPoint.latitude,
+          lng: currentPoint.longitude,
+        });
+        marker
+          .setIcon(currentIcon)
+          .addTo(markerLayer);
+      }
+
       points.forEach((point) => {
         const marker = new Marker({
           lat: point.latitude,
           lng: point.longitude
         });
+        let icon;
+        if (point === highlightedMarker) {
+          icon = currentIcon;
+        } else {
+          icon = standartIcon;
+        }
         marker
-          .setIcon(selectedPoint === point ? activeIcon : defaultIcon)
+          .setIcon(icon)
           .addTo(markerLayer);
       });
 
-      if (currentUrl.includes('offer')) {
-        const offerMarker = new Marker({
-          lat: points.slice(-1)[0].latitude,
-          lng: points.slice(-1)[0].longitude
-        });
-        offerMarker
-          .setIcon(activeIcon)
-          .addTo(markerLayer);
-      }
+      map.setView([city.location.latitude, city.location.longitude], city.location.zoom);
+
       return () => {
         map.removeLayer(markerLayer);
       };
     }
-  }, [map, points, selectedPoint, currentUrl]);
+  }, [map, points, highlightedMarker, city, currentPoint]);
 
   return <div style={{ height: '100%' }} ref={mapRef}></div>;
 }
-
-const Map = memo(MapComponent);
 
 export default Map;
