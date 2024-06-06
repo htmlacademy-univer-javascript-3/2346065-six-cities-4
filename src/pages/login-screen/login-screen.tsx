@@ -3,7 +3,6 @@ import { AppRoute, cities } from '../../const';
 import { loginAction } from '../../store/api-actions';
 import { useAppDispatch } from '../../hooks';
 import { Link } from 'react-router-dom';
-import { redirectToRoute } from '../../store/action';
 import { changeCity } from '../../store/common-data/common-data';
 
 function getRandomCity() {
@@ -64,13 +63,14 @@ function LoginScreen(): JSX.Element {
           </section>
           <section className="locations locations--login locations--current">
             <div className="locations__item">
-              <a className="locations__item-link" onClick={() => {
-                dispatch(redirectToRoute(AppRoute.Main));
-                dispatch(changeCity(city));
-              }}
+              <Link className="locations__item-link"
+                to={AppRoute.Main}
+                onClick={() => {
+                  dispatch(changeCity(city));
+                } }
               >
                 <span>{city}</span>
-              </a>
+              </Link>
             </div>
           </section>
         </div>
