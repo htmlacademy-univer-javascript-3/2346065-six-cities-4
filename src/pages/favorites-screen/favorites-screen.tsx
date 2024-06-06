@@ -36,9 +36,9 @@ function FavoritesScreen(): JSX.Element {
                   <li className="favorites__locations-items" key={city}>
                     <div className="favorites__locations locations locations--current">
                       <div className="locations__item">
-                        <a className="locations__item-link" onClick={() => handleCityClick(city)}>
+                        <Link className="locations__item-link" onClick={() => handleCityClick(city)} to={'#'}>
                           <span>{city}</span>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                     <OfferList offers={favoriteOffers.filter((o) => o.city.name === city)} listType={TypeOfCardList.favourites} />

@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { cities } from '../../const';
 import { changeCity } from '../../store/common-data/common-data';
 import { getCity } from '../../store/common-data/selectors';
+import { Link } from 'react-router-dom';
 
 
 function CityList(): JSX.Element {
@@ -15,12 +16,12 @@ function CityList(): JSX.Element {
     <ul className="locations__list tabs__list">
       {Object.keys(cities).map((city) => (
         <li className="locations__item" key={city}>
-          <a className={`locations__item-link tabs__item ${(city === chosenCity) ? 'tabs__item--active' : ''}`} onClick={() => {
+          <Link className={`locations__item-link tabs__item ${(city === chosenCity) ? 'tabs__item--active' : ''}`} onClick={() => {
             handleCityChange(city);
-          }}
+          } } to={'#'}
           >
             <span>{city}</span>
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

@@ -27,9 +27,15 @@ function OfferCard({ offer, cardType }: OfferProps): JSX.Element {
         </div>
       ) : null}
       <div className={`${cardType === listToCard.get(TypeOfCardList.favourites) ? 'favorites' : 'cities'}__image-wrapper place-card__image-wrapper`}>
-        <a>
+        <Link to={`/offer/${offer.id}`}
+          onClick={() => {
+            dispatch(fetchOfferAction(offer.id));
+            dispatch(fetchReviewsAction(offer.id));
+            dispatch(fetchNearbyAction(offer.id));
+          }}
+        >
           <img className="place-card__image" src={offer.previewImage} width={cardType === listToCard.get(TypeOfCardList.favourites) ? '150' : '260'} height={cardType === listToCard.get(TypeOfCardList.favourites) ? '110' : '200'} alt="Place image" />
-        </a>
+        </Link>
       </div>
       <div className={(cardType === listToCard.get(TypeOfCardList.favourites)) ? 'favorites__card-info place-card__info' : 'place-card__info'}>
         <div className="place-card__price-wrapper">
